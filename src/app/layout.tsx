@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DuoFrameDisplay",
+  title: "Duo Frame Display",
   description:
     "Composite screenshots and screen recordings into an iPhone Duo frame - closed, open, portrait or landscape - with zoom/focus cropping and a shared lightbox.",
 };

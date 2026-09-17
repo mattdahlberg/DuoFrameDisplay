@@ -49,7 +49,7 @@ export default function Harness() {
     <PageLightboxProvider>
       <main className="pb-24">
         <header className="mx-auto max-w-5xl px-6 pt-16 pb-4">
-          <h1 className="text-4xl font-bold tracking-tight">DuoFrameDisplay</h1>
+          <h1 className="text-4xl font-bold tracking-tight">Duo Frame Display</h1>
           <p className="text-muted-foreground mt-4 max-w-2xl text-sm leading-relaxed">
             Development harness. Each section below is a capability example —
             click any frame to open the shared lightbox. Content shown is
@@ -154,22 +154,38 @@ export default function Harness() {
           code={`<DuoImage variant="inner-landscape" src="..." width={320} zoom={2} focus="top" />
 <DuoImage variant="inner-landscape" src="..." width={320} zoom={2} focus="bottom" />`}
         >
-          <DuoImage
-            variant="inner-landscape"
-            src={INNER_LANDSCAPE}
-            caption="Inner landscape, top half"
-            width={320}
-            zoom={2}
-            focus="top"
-          />
-          <DuoImage
-            variant="inner-landscape"
-            src={INNER_LANDSCAPE}
-            caption="Inner landscape, bottom half"
-            width={320}
-            zoom={2}
-            focus="bottom"
-          />
+          <div className="flex flex-col items-center gap-2">
+            <DuoImage
+              variant="inner-landscape"
+              src={INNER_LANDSCAPE}
+              caption="Inner landscape, top half"
+              width={320}
+              zoom={2}
+              focus="top"
+            />
+            <span className="text-muted-foreground font-mono text-xs">
+              focus=&quot;top&quot;
+            </span>
+          </div>
+
+          {/* Separates the two crops so they read as independent examples,
+              not as one image split top/bottom - they're both the full
+              screenshot, just cropped and re-centred differently. */}
+          <div className="border-border my-2 w-full max-w-xs border-t" />
+
+          <div className="flex flex-col items-center gap-2">
+            <DuoImage
+              variant="inner-landscape"
+              src={INNER_LANDSCAPE}
+              caption="Inner landscape, bottom half"
+              width={320}
+              zoom={2}
+              focus="bottom"
+            />
+            <span className="text-muted-foreground font-mono text-xs">
+              focus=&quot;bottom&quot;
+            </span>
+          </div>
         </Section>
       </main>
     </PageLightboxProvider>
