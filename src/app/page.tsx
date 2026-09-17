@@ -1,11 +1,13 @@
 import { CopyButton } from '@/components/copy-button';
 import { DuoImage } from '@/components/phone-frame/duo-image';
+import { DuoVideo } from '@/components/phone-frame/duo-video';
 import { PageLightboxProvider } from '@/components/phone-frame/page-lightbox';
 
 const COVER = '/demo/placeholder-cover.png';
 const COVER_LANDSCAPE = '/demo/placeholder-cover-landscape.png';
 const INNER_LANDSCAPE = '/demo/placeholder-inner-landscape.png';
 const INNER_PORTRAIT = '/demo/placeholder-inner-portrait.png';
+const VIDEO = '/demo/placeholder-video.mp4';
 
 // Local harness. Every section here is one row of the README capability
 // table - code on the left, the rendered output on the right - so each
@@ -21,6 +23,24 @@ type SectionProps = {
   code: string;
   children: React.ReactNode;
 };
+
+// Small mono label under a frame naming the prop value it's demonstrating -
+// context that's otherwise only visible by clicking through to the
+// lightbox caption.
+function LabeledFrame({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col items-center gap-2">
+      {children}
+      <span className="text-muted-foreground font-mono text-xs">{label}</span>
+    </div>
+  );
+}
 
 function Section({ id, title, note, code, children }: SectionProps) {
   return (
@@ -67,12 +87,14 @@ export default function Harness() {
   width={200}
 />`}
         >
-          <DuoImage
-            variant="cover-portrait"
-            src={COVER}
-            caption="Cover, portrait"
-            width={200}
-          />
+          <LabeledFrame label='variant="cover-portrait"'>
+            <DuoImage
+              variant="cover-portrait"
+              src={COVER}
+              caption="Cover, portrait"
+              width={200}
+            />
+          </LabeledFrame>
         </Section>
 
         <Section
@@ -85,12 +107,14 @@ export default function Harness() {
   width={280}
 />`}
         >
-          <DuoImage
-            variant="cover-open"
-            src={COVER}
-            caption="Cover, open angle"
-            width={280}
-          />
+          <LabeledFrame label='variant="cover-open"'>
+            <DuoImage
+              variant="cover-open"
+              src={COVER}
+              caption="Cover, open angle"
+              width={280}
+            />
+          </LabeledFrame>
         </Section>
 
         <Section
@@ -103,12 +127,14 @@ export default function Harness() {
   width={280}
 />`}
         >
-          <DuoImage
-            variant="cover-landscape"
-            src={COVER_LANDSCAPE}
-            caption="Cover, landscape"
-            width={280}
-          />
+          <LabeledFrame label='variant="cover-landscape"'>
+            <DuoImage
+              variant="cover-landscape"
+              src={COVER_LANDSCAPE}
+              caption="Cover, landscape"
+              width={280}
+            />
+          </LabeledFrame>
         </Section>
 
         <Section
@@ -121,12 +147,14 @@ export default function Harness() {
   width={320}
 />`}
         >
-          <DuoImage
-            variant="inner-landscape"
-            src={INNER_LANDSCAPE}
-            caption="Inner, landscape"
-            width={320}
-          />
+          <LabeledFrame label='variant="inner-landscape"'>
+            <DuoImage
+              variant="inner-landscape"
+              src={INNER_LANDSCAPE}
+              caption="Inner, landscape"
+              width={320}
+            />
+          </LabeledFrame>
         </Section>
 
         <Section
@@ -139,12 +167,34 @@ export default function Harness() {
   width={220}
 />`}
         >
-          <DuoImage
-            variant="inner-portrait"
-            src={INNER_PORTRAIT}
-            caption="Inner, portrait"
-            width={220}
-          />
+          <LabeledFrame label='variant="inner-portrait"'>
+            <DuoImage
+              variant="inner-portrait"
+              src={INNER_PORTRAIT}
+              caption="Inner, portrait"
+              width={220}
+            />
+          </LabeledFrame>
+        </Section>
+
+        <Section
+          id="duo-video"
+          title="DuoVideo"
+          note="Same geometry as DuoImage, for a screen recording instead of a screenshot. Loads lazily on scroll and shows its generated poster until then - run npm run generate-posters after adding a new video."
+          code={`<DuoVideo
+  variant="inner-landscape"
+  src="/demo.mp4"
+  width={320}
+/>`}
+        >
+          <LabeledFrame label='variant="inner-landscape"'>
+            <DuoVideo
+              variant="inner-landscape"
+              src={VIDEO}
+              caption="Inner landscape, video"
+              width={320}
+            />
+          </LabeledFrame>
         </Section>
 
         <Section
@@ -154,7 +204,7 @@ export default function Harness() {
           code={`<DuoImage variant="inner-landscape" src="..." width={320} zoom={2} focus="top" />
 <DuoImage variant="inner-landscape" src="..." width={320} zoom={2} focus="bottom" />`}
         >
-          <div className="flex flex-col items-center gap-2">
+          <LabeledFrame label='focus="top"'>
             <DuoImage
               variant="inner-landscape"
               src={INNER_LANDSCAPE}
@@ -163,17 +213,14 @@ export default function Harness() {
               zoom={2}
               focus="top"
             />
-            <span className="text-muted-foreground font-mono text-xs">
-              focus=&quot;top&quot;
-            </span>
-          </div>
+          </LabeledFrame>
 
           {/* Separates the two crops so they read as independent examples,
               not as one image split top/bottom - they're both the full
               screenshot, just cropped and re-centred differently. */}
           <div className="border-border my-2 w-full max-w-xs border-t" />
 
-          <div className="flex flex-col items-center gap-2">
+          <LabeledFrame label='focus="bottom"'>
             <DuoImage
               variant="inner-landscape"
               src={INNER_LANDSCAPE}
@@ -182,10 +229,7 @@ export default function Harness() {
               zoom={2}
               focus="bottom"
             />
-            <span className="text-muted-foreground font-mono text-xs">
-              focus=&quot;bottom&quot;
-            </span>
-          </div>
+          </LabeledFrame>
         </Section>
       </main>
     </PageLightboxProvider>
