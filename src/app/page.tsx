@@ -1,13 +1,13 @@
+import { Play } from 'lucide-react';
+
 import { CopyButton } from '@/components/copy-button';
 import { DuoImage } from '@/components/phone-frame/duo-image';
-import { DuoVideo } from '@/components/phone-frame/duo-video';
 import { PageLightboxProvider } from '@/components/phone-frame/page-lightbox';
 
 const COVER = '/demo/placeholder-cover.png';
 const COVER_LANDSCAPE = '/demo/placeholder-cover-landscape.png';
 const INNER_LANDSCAPE = '/demo/placeholder-inner-landscape.png';
 const INNER_PORTRAIT = '/demo/placeholder-inner-portrait.png';
-const VIDEO = '/demo/placeholder-video.mp4';
 
 // Local harness. Every section here is one row of the README capability
 // table - code on the left, the rendered output on the right - so each
@@ -38,6 +38,24 @@ function LabeledFrame({
     <div className="flex flex-col items-center gap-2">
       {children}
       <span className="text-muted-foreground font-mono text-xs">{label}</span>
+    </div>
+  );
+}
+
+// Stands in for DuoVideo in the harness: the Duo isn't shipping yet, so
+// there's no real recording to show and a fake one would overstate what
+// this actually demos. A play icon over a static frame signals "video goes
+// here" without implying real footage - swap for an actual <DuoVideo> once
+// there's something real to record.
+function VideoIntentPreview({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative">
+      {children}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div className="bg-black/55 rounded-full p-4 backdrop-blur-sm">
+          <Play className="size-8 fill-white text-white" aria-hidden />
+        </div>
+      </div>
     </div>
   );
 }
@@ -180,7 +198,7 @@ export default function Harness() {
         <Section
           id="duo-video"
           title="DuoVideo"
-          note="Same geometry as DuoImage, for a screen recording instead of a screenshot. Loads lazily on scroll and shows its generated poster until then - run npm run generate-posters after adding a new video."
+          note="Same geometry as DuoImage, for a screen recording instead of a screenshot. Loads lazily on scroll and shows its generated poster until then - run npm run generate-posters after adding one."
           code={`<DuoVideo
   variant="inner-landscape"
   src="/demo.mp4"
@@ -188,12 +206,14 @@ export default function Harness() {
 />`}
         >
           <LabeledFrame label='variant="inner-landscape"'>
-            <DuoVideo
-              variant="inner-landscape"
-              src={VIDEO}
-              caption="Inner landscape, video"
-              width={320}
-            />
+            <VideoIntentPreview>
+              <DuoImage
+                variant="inner-landscape"
+                src={INNER_LANDSCAPE}
+                caption="Inner landscape, video"
+                width={320}
+              />
+            </VideoIntentPreview>
           </LabeledFrame>
         </Section>
 
