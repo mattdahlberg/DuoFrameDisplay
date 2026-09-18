@@ -1,5 +1,9 @@
 # DuoFrameDisplay
 
+![Screenshots composited into all five iPhone Duo frame states](docs/hero.jpg)
+
+**[See it running →](https://dahlberg.work/demo/DuoFrameDisplay)** — every capability rendered live, with its code beside it. Click any frame to open the shared lightbox.
+
 React components for showing app screenshots and screen recordings inside an iPhone Duo frame — closed, closed-at-an-angle, closed-landscape, unfolded-landscape or unfolded-portrait — with zoom cropping and a shared lightbox. Next.js, Tailwind, shadcn-style copy-paste.
 
 Built the same way as [iPhoneFrameDisplay](https://github.com/mattdahlberg/iPhoneFrameDisplay), adapted for a foldable: the Duo's five frame graphics aren't interchangeable alternates the way iPhone models are — they're the device's five physical states, so `<DuoImage>`/`<DuoVideo>` take a `variant` prop rather than `model`.
@@ -9,7 +13,7 @@ Built the same way as [iPhoneFrameDisplay](https://github.com/mattdahlberg/iPhon
 - **`<ProjectImageGrid>`** — lay several frames out side by side
 - **Shared lightbox** — click any of them to open the full, uncropped frame; every instance on the page joins one swipeable gallery
 
-> Development harness only for now — no live demo link or hero screenshot yet, since real screen content for the Duo doesn't exist until it ships. `npm run dev` and see [Examples](#examples) below.
+Content shown above is placeholder art — real screenshots/recordings will swap in once the Duo ships.
 
 ## Requirements
 
