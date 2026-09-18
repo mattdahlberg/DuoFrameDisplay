@@ -226,7 +226,13 @@ export const DUO_VARIANTS = Object.keys(FRAMES) as DuoVariant[];
 // to the full, uncropped phone regardless of zoom/focus (false).
 export const LIGHTBOX_MATCHES_CROP = true;
 
-export type FrameFocus = 'top' | 'center' | 'bottom';
+// top/center/bottom crop vertically and pair with `zoom` (2+ clips to
+// roughly a 1/zoom-height slice). left/right are a different axis entirely:
+// a fixed 50/50 split of the frame's width, ignoring `zoom` altogether -
+// built for the Duo's inner-landscape state, where the hinge itself splits
+// the unfolded display into a left and right pane, and showing "the app in
+// one pane" is a half-width crop, not a tunable zoom.
+export type FrameFocus = 'top' | 'center' | 'bottom' | 'left' | 'right';
 
 // A tighter zoom shows less of the frame in a box of the same width, which
 // reads as *smaller* on the page - counter to the point of zooming in. Scale
@@ -234,16 +240,18 @@ export type FrameFocus = 'top' | 'center' | 'bottom';
 // sqrt keeps that growth from compounding with the crop's own height loss
 // (which is linear in zoom) into something that blows up the layout at high
 // zoom values. zoom={1} (the default) is unaffected - width stays exactly
-// what was passed in.
+// what was passed in. Irrelevant for focus="left"/"right", which never call
+// this with a zoom worth scaling for.
 export function computeDisplayWidth(width: number, zoom: number) {
   return width * Math.sqrt(zoom);
 }
 
-// The zoom/focus crop math shared by every placement: 1 = full frame
-// visible; 2+ zooms in and clips to roughly a 1/zoom-height slice, with
-// `focus` choosing which slice stays in view. Orientation-agnostic - works
-// the same for the landscape variants as the portrait ones, since it only
-// ever operates on the frame's own width/height ratio.
+// The zoom/focus crop math shared by every placement. Always returns both
+// axes - the one focus isn't using stays at its neutral, uncropped value -
+// so callers can apply the result the same way regardless of which axis is
+// active. Orientation-agnostic - works the same for the landscape variants
+// as the portrait ones, since it only ever operates on the frame's own
+// width/height ratio.
 export function computeFrameLayout(
   width: number,
   zoom: number,
@@ -253,6 +261,24 @@ export function computeFrameLayout(
 ) {
   // Full, un-cropped size of the frame at this width.
   const phoneHeight = (width / frameWidth) * frameHeight;
+
+  if (focus === 'left' || focus === 'right') {
+    const viewportWidth = width / 2;
+    const offsetX = focus === 'left' ? 0 : -viewportWidth;
+
+    return {
+      phoneHeight,
+      viewportWidth,
+      viewportHeight: phoneHeight,
+      offsetX,
+      offsetY: 0,
+      widthPercent: 200,
+      heightPercent: 100,
+      offsetXPercent: focus === 'left' ? 0 : -100,
+      offsetYPercent: 0,
+    };
+  }
+
   // The visible window shrinks as zoom increases - this is what gets clipped.
   const viewportHeight = phoneHeight / zoom;
   const hiddenHeight = phoneHeight - viewportHeight;
@@ -266,5 +292,15 @@ export function computeFrameLayout(
   const offsetYPercent =
     focus === 'top' ? 0 : focus === 'bottom' ? -hiddenPercent : -hiddenPercent / 2;
 
-  return { phoneHeight, viewportHeight, offsetY, heightPercent, offsetYPercent };
+  return {
+    phoneHeight,
+    viewportWidth: width,
+    viewportHeight,
+    offsetX: 0,
+    offsetY,
+    widthPercent: 100,
+    heightPercent,
+    offsetXPercent: 0,
+    offsetYPercent,
+  };
 }

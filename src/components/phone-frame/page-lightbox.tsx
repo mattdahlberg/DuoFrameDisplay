@@ -24,10 +24,12 @@ export type LightboxFrame = {
   width: number;
   height: number;
   // Where the frame (and its screen) sits within the slide, as a % of the
-  // slide's own box - lets the caller show a cropped portion of a taller
-  // frame instead of the whole thing. 0 / 100 (the defaults) render the
-  // frame at its natural size with no crop.
+  // slide's own box - lets the caller show a cropped portion of a taller or
+  // narrower frame instead of the whole thing. 0 / 100 (the defaults) render
+  // the frame at its natural size with no crop.
+  offsetXPercent?: number;
   offsetYPercent?: number;
+  widthPercent?: number;
   heightPercent?: number;
   screen: {
     top: number;
@@ -108,7 +110,9 @@ function toSlideData(entry: LightboxEntry): SlideData {
     const contentSrc = escapeAttribute(entry.src);
     const frameSrc = escapeAttribute(frame.src);
     const { screen } = frame;
+    const offsetXPercent = frame.offsetXPercent ?? 0;
     const offsetYPercent = frame.offsetYPercent ?? 0;
+    const widthPercent = frame.widthPercent ?? 100;
     const heightPercent = frame.heightPercent ?? 100;
     const content =
       entry.type === 'phone-video'
@@ -117,7 +121,7 @@ function toSlideData(entry: LightboxEntry): SlideData {
 
     return {
       html: `<div class="pswp__phone-video-slide" style="position:relative;width:100%;height:100%;overflow:hidden">
-        <div style="position:absolute;top:${offsetYPercent}%;left:0;width:100%;height:${heightPercent}%">
+        <div style="position:absolute;top:${offsetYPercent}%;left:${offsetXPercent}%;width:${widthPercent}%;height:${heightPercent}%">
           <div style="position:absolute;overflow:hidden;top:${screen.top}%;left:${screen.left}%;width:${screen.width}%;height:${screen.height}%;border-radius:${screen.radiusX.map((v) => `${v}%`).join(' ')} / ${screen.radiusY.map((v) => `${v}%`).join(' ')}">
             ${content}
           </div>

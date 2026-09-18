@@ -58,11 +58,12 @@ import { DuoImage } from '@/components/phone-frame/duo-image';
 | `caption` | — | lightbox caption, and alt text for `DuoImage` |
 | `variant` | `cover-portrait` | which physical state to render - see [Frames](#frames) |
 | `width` | `280` | rendered width in px **at `zoom={1}`**; grows with zoom |
-| `zoom` | `1` | `1` = whole frame, `2+` crops tighter |
-| `focus` | `center` | `top` / `center` / `bottom`; no effect at `zoom={1}` |
+| `zoom` | `1` | `1` = whole frame, `2+` crops tighter. Ignored when `focus` is `left`/`right` |
+| `focus` | `center` | `top` / `center` / `bottom` crop vertically, paired with `zoom` - no effect at `zoom={1}`. `left` / `right` crop to a fixed 50/50 split of the frame's width instead, ignoring `zoom` entirely - built for the hinge itself, e.g. showing one pane of `inner-landscape`'s split-view layout |
 
 ```tsx
 <DuoVideo variant="inner-landscape" src="/demo.mp4" width={320} zoom={2} focus="bottom" />
+<DuoImage variant="inner-landscape" src="/split-view.png" width={220} focus="left" />
 ```
 
 `DuoVideo` expects a poster image alongside the video as `<name>-poster.jpg`. Generate them with:
