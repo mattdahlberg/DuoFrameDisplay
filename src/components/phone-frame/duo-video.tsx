@@ -9,6 +9,7 @@ import {
   DEFAULT_VARIANT,
   getDuoFrame,
   LIGHTBOX_MATCHES_CROP,
+  screenBorderRadius,
   type DuoVariant,
 } from '@/components/phone-frame/duo-frame-constants';
 import { useLightboxTrigger } from '@/components/phone-frame/page-lightbox';
@@ -168,7 +169,7 @@ export function DuoVideo({
             left: `${screen.left}%`,
             width: `${screen.width}%`,
             height: `${screen.height}%`,
-            borderRadius: `${screen.radiusX}% / ${screen.radiusY}%`,
+            borderRadius: screenBorderRadius(screen),
           }}
         >
           {isNearViewport ? (

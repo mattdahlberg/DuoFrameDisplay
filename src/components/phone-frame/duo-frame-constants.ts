@@ -20,26 +20,38 @@ export type DuoVariant =
 // Used whenever a placement doesn't name a variant.
 export const DEFAULT_VARIANT: DuoVariant = 'cover-portrait';
 
-type ScreenRect = {
-  // All values are % of the *frame's* own width/height, except radiusX/Y,
-  // which are % of the screen window's width/height. Expressing the radius
-  // against the screen (not the frame) is what makes the rounding scale
-  // correctly at any render size - inline, or the much larger lightbox.
+type MeasuredRect = {
+  // % of the *frame's* own width/height.
   top: number;
   left: number;
   width: number;
   height: number;
-  radiusX: number;
-  radiusY: number;
+};
+
+// Per-corner radius, in [top-left, top-right, bottom-right, bottom-left]
+// order - matches the order CSS's border-radius longhand takes, so
+// getDuoFrame's output can be dropped straight into a style string.
+type CornerRadius = [number, number, number, number];
+
+type ScreenRect = MeasuredRect & {
+  radiusX: CornerRadius;
+  radiusY: CornerRadius;
 };
 
 type FrameSpec = {
   src: string;
   width: number;
   height: number;
-  // Raw measured cutout, before BLEED/RADIUS_SCALE are applied.
-  measured: ScreenRect;
+  // Raw measured cutout, before BLEED/INSET are applied.
+  measured: MeasuredRect;
+  // Raw per-corner radius, before RADIUS_SCALE is applied, as % of the
+  // measured screen's own width/height. Omitted (defaults to flat/square)
+  // for frames that don't need it.
+  radiusX?: CornerRadius;
+  radiusY?: CornerRadius;
 };
+
+const ZERO_RADIUS: CornerRadius = [0, 0, 0, 0];
 
 // ---------------------------------------------------------------------------
 // Measuring a frame's cutout
@@ -50,18 +62,22 @@ type FrameSpec = {
 // not via a naive flood fill from the centre pixel outward - on these
 // frames the transparent screen region and the transparent background
 // outside the device sit close enough together that a flood fill can
-// silently merge the two into one oversized region. Measure the corner
-// radius the same way: read the alpha inset at each row moving down from
-// the top edge until it reaches the flat side, from a *zoomed crop* of
-// the corner rather than a script guess - the cover frames' screen corners
-// are nearly square (~1% radius), while the inner frames' are drawn with a
-// much more pronounced curve (~5-6% radius); a script that assumes one
-// shape for both will get one of the two visibly wrong.
+// silently merge the two into one oversized region.
+//
+// Measure each corner independently, not just one and assume symmetry: the
+// three cover frames' screen cutout is NOT a uniform rounded rect - three
+// corners are nearly square (~1% radius) but the corner next to the front
+// camera sweeps out much wider (~10-19% radius), because the cutout curves
+// around the camera housing rather than following the display's own bezel
+// radius. The inner frames don't have this asymmetry (no camera in the
+// unfolded display) and don't specify radiusX/radiusY at all - square
+// corners, tucked under the frame by INSET alone.
 const FRAMES: Record<DuoVariant, FrameSpec> = {
   // Closed, outer 5.4" display facing you. duo-cover-open shares this exact
   // cutout (same size, shifted right on its wider canvas) - it's the same
   // physical screen shown from an angle where the other half of the frame
-  // renders the phone's closed-back half instead of background.
+  // renders the phone's closed-back half instead of background. Camera sits
+  // top-right, so that's the wide corner; radiusX/Y are [TL, TR, BR, BL].
   'cover-portrait': {
     src: '/frames/duo-cover-portrait.png',
     width: 516,
@@ -71,13 +87,9 @@ const FRAMES: Record<DuoVariant, FrameSpec> = {
       left: 5.62,
       width: 90.5,
       height: 95.23,
-      // Radius is a hair above the raw alpha-channel measurement (not below
-      // it, like the other variants) - at this frame's near-square corner,
-      // RADIUS_SCALE's squircle compensation otherwise leaves the content's
-      // sharp corner peeking past the frame's curve.
-      radiusX: 2.86,
-      radiusY: 2.14,
     },
+    radiusX: [2.86, 18.57, 18.57, 2.86],
+    radiusY: [2.14, 12.14, 12.14, 2.14],
   },
   'cover-open': {
     src: '/frames/duo-cover-open.png',
@@ -88,10 +100,12 @@ const FRAMES: Record<DuoVariant, FrameSpec> = {
       left: 51.25,
       width: 46.65,
       height: 95.23,
-      radiusX: 2.86,
-      radiusY: 2.14,
     },
+    radiusX: [2.86, 18.57, 18.57, 2.86],
+    radiusY: [2.14, 12.14, 12.14, 2.14],
   },
+  // Rotated 90° from the portrait cutout, so the camera - and its wide
+  // corner - moves from top-right to bottom-right/bottom-left.
   'cover-landscape': {
     src: '/frames/duo-cover-landscape.png',
     width: 713,
@@ -101,9 +115,9 @@ const FRAMES: Record<DuoVariant, FrameSpec> = {
       left: 2.1,
       width: 95.23,
       height: 90.33,
-      radiusX: 2.14,
-      radiusY: 2.86,
     },
+    radiusX: [2.14, 2.14, 11.43, 11.43],
+    radiusY: [2.86, 2.86, 18.57, 18.57],
   },
   // Open, both halves of the inner 7.6" display combined into one
   // continuous screen (this is how the real device works - unfolded, it's
@@ -117,8 +131,6 @@ const FRAMES: Record<DuoVariant, FrameSpec> = {
       left: 2.3,
       width: 95.2,
       height: 93.44,
-      radiusX: 4.52,
-      radiusY: 6.43,
     },
   },
   'inner-portrait': {
@@ -130,8 +142,6 @@ const FRAMES: Record<DuoVariant, FrameSpec> = {
       left: 3.62,
       width: 93.18,
       height: 95.39,
-      radiusX: 6.43,
-      radiusY: 4.52,
     },
   },
 };
@@ -144,6 +154,14 @@ const FRAMES: Record<DuoVariant, FrameSpec> = {
 // ever crops a sliver more via object-cover, never stretches/distorts the
 // content. Set to 0 to fall back to the raw measured edges.
 const BLEED = 0.4;
+
+// Pulls content in from the measured screen edges by this many % of the
+// screen's own width/height, so it sits with a small margin instead of
+// landing exactly flush. A real screenshot won't be cropped to this
+// project's exact measured resolution the way the placeholder art is -
+// insetting gives room for that mismatch to go unnoticed instead of showing
+// up as a sliver at the edge. Set to 0 for the old edge-to-edge behaviour.
+const INSET = 1;
 
 // The frame's corner is a continuous-curvature "squircle" (same family as
 // iOS app icons), not a true circular/elliptical arc - the only shape CSS
@@ -164,20 +182,42 @@ export type ResolvedFrame = {
 export function getDuoFrame(variant: DuoVariant = DEFAULT_VARIANT): ResolvedFrame {
   const frame = FRAMES[variant] ?? FRAMES[DEFAULT_VARIANT];
   const m = frame.measured;
+  const scale = (r: CornerRadius): CornerRadius => [
+    r[0] * RADIUS_SCALE,
+    r[1] * RADIUS_SCALE,
+    r[2] * RADIUS_SCALE,
+    r[3] * RADIUS_SCALE,
+  ];
+
+  // INSET shrinks in from the measured screen edges; BLEED then expands
+  // back out a hair to avoid a hairline gap at that new, smaller edge - same
+  // purpose as before, just applied relative to the inset rect rather than
+  // the raw measured one.
+  const insetTop = (m.height * INSET) / 100;
+  const insetLeft = (m.width * INSET) / 100;
 
   return {
     src: frame.src,
     width: frame.width,
     height: frame.height,
     screen: {
-      top: m.top - BLEED,
-      left: m.left - BLEED,
-      width: m.width + BLEED * 2,
-      height: m.height + BLEED * 2,
-      radiusX: m.radiusX * RADIUS_SCALE,
-      radiusY: m.radiusY * RADIUS_SCALE,
+      top: m.top + insetTop - BLEED,
+      left: m.left + insetLeft - BLEED,
+      width: m.width - insetLeft * 2 + BLEED * 2,
+      height: m.height - insetTop * 2 + BLEED * 2,
+      radiusX: scale(frame.radiusX ?? ZERO_RADIUS),
+      radiusY: scale(frame.radiusY ?? ZERO_RADIUS),
     },
   };
+}
+
+// CSS border-radius longhand from a screen's per-corner radii - shared by
+// DuoImage/DuoVideo's inline style and the lightbox's HTML string, so the
+// two stay in sync.
+export function screenBorderRadius(screen: Pick<ScreenRect, 'radiusX' | 'radiusY'>) {
+  const x = screen.radiusX.map((v) => `${v}%`).join(' ');
+  const y = screen.radiusY.map((v) => `${v}%`).join(' ');
+  return `${x} / ${y}`;
 }
 
 export const DUO_VARIANTS = Object.keys(FRAMES) as DuoVariant[];

@@ -34,8 +34,12 @@ export type LightboxFrame = {
     left: number;
     width: number;
     height: number;
-    radiusX: number;
-    radiusY: number;
+    // [top-left, top-right, bottom-right, bottom-left] - CSS border-radius
+    // longhand order. Most frames use the same value in all four slots, but
+    // the Duo's cover screen doesn't: the corner next to the camera sweeps
+    // out much wider than the other three.
+    radiusX: [number, number, number, number];
+    radiusY: [number, number, number, number];
   };
 };
 
@@ -114,7 +118,7 @@ function toSlideData(entry: LightboxEntry): SlideData {
     return {
       html: `<div class="pswp__phone-video-slide" style="position:relative;width:100%;height:100%;overflow:hidden">
         <div style="position:absolute;top:${offsetYPercent}%;left:0;width:100%;height:${heightPercent}%">
-          <div style="position:absolute;overflow:hidden;top:${screen.top}%;left:${screen.left}%;width:${screen.width}%;height:${screen.height}%;border-radius:${screen.radiusX}% / ${screen.radiusY}%">
+          <div style="position:absolute;overflow:hidden;top:${screen.top}%;left:${screen.left}%;width:${screen.width}%;height:${screen.height}%;border-radius:${screen.radiusX.map((v) => `${v}%`).join(' ')} / ${screen.radiusY.map((v) => `${v}%`).join(' ')}">
             ${content}
           </div>
           <img src="${frameSrc}" alt="" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none" />
