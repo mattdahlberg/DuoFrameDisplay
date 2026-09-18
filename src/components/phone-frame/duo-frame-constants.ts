@@ -71,8 +71,12 @@ const FRAMES: Record<DuoVariant, FrameSpec> = {
       left: 5.62,
       width: 90.5,
       height: 95.23,
-      radiusX: 1.28,
-      radiusY: 0.88,
+      // Radius is a hair above the raw alpha-channel measurement (not below
+      // it, like the other variants) - at this frame's near-square corner,
+      // RADIUS_SCALE's squircle compensation otherwise leaves the content's
+      // sharp corner peeking past the frame's curve.
+      radiusX: 2.86,
+      radiusY: 2.14,
     },
   },
   'cover-open': {
@@ -84,8 +88,8 @@ const FRAMES: Record<DuoVariant, FrameSpec> = {
       left: 51.25,
       width: 46.65,
       height: 95.23,
-      radiusX: 1.28,
-      radiusY: 0.88,
+      radiusX: 2.86,
+      radiusY: 2.14,
     },
   },
   'cover-landscape': {
@@ -97,8 +101,8 @@ const FRAMES: Record<DuoVariant, FrameSpec> = {
       left: 2.1,
       width: 95.23,
       height: 90.33,
-      radiusX: 0.88,
-      radiusY: 1.28,
+      radiusX: 2.14,
+      radiusY: 2.86,
     },
   },
   // Open, both halves of the inner 7.6" display combined into one
