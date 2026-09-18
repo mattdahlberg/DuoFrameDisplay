@@ -1,0 +1,116 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "duo-frame-display",
+  "homepage": "https://github.com/mattdahlberg/DuoFrameDisplay",
+  "items": [
+    {
+      "name": "page-lightbox",
+      "type": "registry:component",
+      "title": "Page Lightbox",
+      "description": "PhotoSwipe-backed provider and useLightboxTrigger hook. Every framed image, video and gallery item on a page registers into one shared, swipeable lightbox.",
+      "dependencies": ["photoswipe", "clsx", "tailwind-merge"],
+      "files": [
+        {
+          "path": "src/components/phone-frame/page-lightbox.tsx",
+          "type": "registry:component",
+          "target": "components/phone-frame/page-lightbox.tsx"
+        },
+        {
+          "path": "src/components/phone-frame/page-lightbox.css",
+          "type": "registry:file",
+          "target": "components/phone-frame/page-lightbox.css"
+        }
+      ]
+    },
+    {
+      "name": "duo-image",
+      "type": "registry:component",
+      "title": "Duo Image",
+      "description": "Composites a screenshot into an iPhone Duo frame - closed, closed-at-an-angle, closed-landscape, unfolded-landscape or unfolded-portrait - with zoom/focus cropping and click-to-open in the shared lightbox.",
+      "registryDependencies": ["page-lightbox"],
+      "files": [
+        {
+          "path": "src/components/phone-frame/duo-image.tsx",
+          "type": "registry:component",
+          "target": "components/phone-frame/duo-image.tsx"
+        },
+        {
+          "path": "src/components/phone-frame/duo-frame-constants.ts",
+          "type": "registry:lib",
+          "target": "components/phone-frame/duo-frame-constants.ts"
+        }
+      ],
+      "docs": "The frame PNGs are not installed by this command - shadcn inlines file contents as UTF-8 text, which corrupts binary files. Download all five from public/frames/ in the repo and place them at public/frames/ in your project: https://github.com/mattdahlberg/DuoFrameDisplay/tree/main/public/frames"
+    },
+    {
+      "name": "duo-video",
+      "type": "registry:component",
+      "title": "Duo Video",
+      "description": "Composites a screen recording into an iPhone Duo frame. Lazy-loads on scroll behind a generated poster, then autoplays muted and looping.",
+      "registryDependencies": ["page-lightbox", "duo-image"],
+      "files": [
+        {
+          "path": "src/components/phone-frame/duo-video.tsx",
+          "type": "registry:component",
+          "target": "components/phone-frame/duo-video.tsx"
+        },
+        {
+          "path": "src/components/ui/video.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/video.tsx"
+        }
+      ]
+    },
+    {
+      "name": "project-image-grid",
+      "type": "registry:component",
+      "title": "Project Image Grid",
+      "description": "Wrapping flex layout for placing several frames side by side.",
+      "files": [
+        {
+          "path": "src/components/phone-frame/project-media.tsx",
+          "type": "registry:component",
+          "target": "components/phone-frame/project-media.tsx"
+        }
+      ]
+    },
+    {
+      "name": "large-image",
+      "type": "registry:component",
+      "title": "Large Image",
+      "description": "Full-width figure with an optional caption that joins the same shared lightbox.",
+      "registryDependencies": ["page-lightbox"],
+      "files": [
+        {
+          "path": "src/components/phone-frame/large-image.tsx",
+          "type": "registry:component",
+          "target": "components/phone-frame/large-image.tsx"
+        },
+        {
+          "path": "src/components/phone-frame/image-gallery.tsx",
+          "type": "registry:component",
+          "target": "components/phone-frame/image-gallery.tsx"
+        }
+      ]
+    },
+    {
+      "name": "lightbox-video",
+      "type": "registry:component",
+      "title": "Lightbox Video",
+      "description": "Unframed video figure that joins the same shared lightbox, sizing itself to the source's aspect ratio.",
+      "registryDependencies": ["page-lightbox"],
+      "files": [
+        {
+          "path": "src/components/phone-frame/lightbox-video.tsx",
+          "type": "registry:component",
+          "target": "components/phone-frame/lightbox-video.tsx"
+        },
+        {
+          "path": "src/components/ui/video.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/video.tsx"
+        }
+      ]
+    }
+  ]
+}

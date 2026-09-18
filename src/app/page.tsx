@@ -220,7 +220,7 @@ export default function Harness() {
         <Section
           id="zoom-focus"
           title="zoom / focus"
-          note="Same as PhoneImage - zoom crops in, focus picks which slice stays in view. Works the same on landscape variants."
+          note="zoom crops in, focus picks which slice stays in view. Works the same on landscape variants."
           code={`<DuoImage variant="inner-landscape" src="..." width={320} zoom={2} focus="top" />
 <DuoImage variant="inner-landscape" src="..." width={320} zoom={2} focus="bottom" />`}
         >

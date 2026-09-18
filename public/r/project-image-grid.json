@@ -1,0 +1,15 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "project-image-grid",
+  "title": "Project Image Grid",
+  "description": "Wrapping flex layout for placing several frames side by side.",
+  "files": [
+    {
+      "path": "src/components/phone-frame/project-media.tsx",
+      "content": "import { cn } from '@/lib/utils';\n\ntype ProjectMediaProps = {\n  children: React.ReactNode;\n  className?: string;\n};\n\n// Layout helpers only - deliberately free of any page-width or typography\n// classes. Wrap these in your own container/prose wrapper; a component\n// library shouldn't decide how wide your content column is.\n\nexport function ProjectMedia({ children, className }: ProjectMediaProps) {\n  return (\n    <div className={cn('space-y-15 md:space-y-18', className)}>{children}</div>\n  );\n}\n\nexport function ProjectImageGrid({ children, className }: ProjectMediaProps) {\n  return (\n    <div className={cn('flex flex-wrap justify-center gap-10', className)}>\n      {children}\n    </div>\n  );\n}\n",
+      "type": "registry:component",
+      "target": "components/phone-frame/project-media.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

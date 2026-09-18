@@ -17,8 +17,8 @@ import {
 export type LightboxMediaType = 'image' | 'video' | 'phone-video' | 'phone-image';
 
 // Generic "content composited inside a device frame" config. Kept free of
-// any specific frame's measurements - the caller (e.g. PhoneVideo,
-// PhoneImage) supplies its own frame image and screen-cutout geometry.
+// any specific frame's measurements - the caller (e.g. DuoVideo,
+// DuoImage) supplies its own frame image and screen-cutout geometry.
 export type LightboxFrame = {
   src: string;
   width: number;
@@ -231,7 +231,7 @@ export function PageLightboxProvider({ children }: { children: ReactNode }) {
     });
 
     // Opening the lightbox directly at a non-first slide (e.g. clicking a
-    // cropped PhoneVideo instance) doesn't fire 'change', and pswp.currSlide
+    // cropped DuoVideo instance) doesn't fire 'change', and pswp.currSlide
     // isn't reliably set yet at that point either - so 'change' alone misses
     // it. This fires per-content the moment it's actually attached, with the
     // element handed to us directly.

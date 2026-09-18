@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "lightbox-video",
+  "title": "Lightbox Video",
+  "description": "Unframed video figure that joins the same shared lightbox, sizing itself to the source's aspect ratio.",
+  "registryDependencies": [
+    "page-lightbox"
+  ],
+  "files": [
+    {
+      "path": "src/components/phone-frame/lightbox-video.tsx",
+      "content": "'use client';\n\nimport { useLightboxTrigger } from '@/components/phone-frame/page-lightbox';\nimport { Video } from '@/components/ui/video';\nimport { cn } from '@/lib/utils';\n\ntype LightboxVideoProps = Omit<\n  React.ComponentPropsWithoutRef<typeof Video>,\n  'src'\n> & {\n  src: string;\n  caption?: string;\n  /** Fallback ratio until metadata loads */\n  width?: number;\n  height?: number;\n};\n\nexport function LightboxVideo({\n  src,\n  caption,\n  className,\n  width = 1920,\n  height = 1080,\n  ...props\n}: LightboxVideoProps) {\n  const { ref, open, contentSize } = useLightboxTrigger({\n    src,\n    type: 'video',\n    width,\n    height,\n    alt: caption,\n    caption,\n  });\n\n  const isPortrait = contentSize.height > contentSize.width;\n\n  return (\n    <figure className=\"flex flex-col items-center gap-5\">\n      <button\n        type=\"button\"\n        ref={ref}\n        onClick={open}\n        className={cn(\n          'bg-muted cursor-zoom-in overflow-hidden rounded-md outline-none',\n          isPortrait\n            ? 'mx-auto h-[min(70vh,36rem)] w-auto max-w-full'\n            : 'w-full',\n        )}\n        style={{\n          aspectRatio: `${contentSize.width} / ${contentSize.height}`,\n        }}\n        aria-label={\n          caption ? `View ${caption} full size` : 'View video full size'\n        }\n      >\n        <Video\n          src={src}\n          className={cn('size-full object-contain', className)}\n          {...props}\n        />\n      </button>\n      {caption && (\n        <figcaption className=\"text-muted-foreground text-center text-base\">\n          {caption}\n        </figcaption>\n      )}\n    </figure>\n  );\n}\n",
+      "type": "registry:component",
+      "target": "components/phone-frame/lightbox-video.tsx"
+    },
+    {
+      "path": "src/components/ui/video.tsx",
+      "content": "import { cn } from '@/lib/utils';\n\ntype VideoProps = Omit<\n  React.ComponentPropsWithoutRef<'video'>,\n  'autoPlay' | 'muted' | 'loop' | 'playsInline' | 'controls'\n> & {\n  src: string;\n  autoPlay?: boolean;\n  muted?: boolean;\n  loop?: boolean;\n  playsInline?: boolean;\n  controls?: boolean;\n  className?: string;\n};\n\nexport function Video({\n  src,\n  className,\n  autoPlay = true,\n  muted = true,\n  loop = true,\n  playsInline = true,\n  controls = false,\n  poster,\n  children,\n  ...props\n}: VideoProps) {\n  return (\n    <video\n      src={src}\n      className={cn('h-auto w-full', className)}\n      autoPlay={autoPlay}\n      muted={muted}\n      loop={loop}\n      playsInline={playsInline}\n      controls={controls}\n      poster={poster}\n      {...props}\n    >\n      {children}\n    </video>\n  );\n}\n",
+      "type": "registry:ui",
+      "target": "components/ui/video.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

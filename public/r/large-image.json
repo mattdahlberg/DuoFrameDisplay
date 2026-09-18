@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "large-image",
+  "title": "Large Image",
+  "description": "Full-width figure with an optional caption that joins the same shared lightbox.",
+  "registryDependencies": [
+    "page-lightbox"
+  ],
+  "files": [
+    {
+      "path": "src/components/phone-frame/large-image.tsx",
+      "content": "'use client';\n\nimport Image from 'next/image';\n\nimport { GalleryItem } from '@/components/phone-frame/image-gallery';\nimport { cn } from '@/lib/utils';\n\ntype LargeImageProps = {\n  src: string;\n  alt?: string;\n  caption?: string;\n  width: number;\n  height: number;\n  wrapperClassName?: string;\n  imageClassName?: string;\n  className?: string;\n};\n\nexport function LargeImage({\n  src,\n  alt,\n  caption,\n  width,\n  height,\n  wrapperClassName,\n  imageClassName,\n  className,\n}: LargeImageProps) {\n  const label = caption || alt || '';\n\n  return (\n    <figure\n      className={cn('flex flex-col gap-5', className)}\n    >\n      <GalleryItem\n        original={src}\n        thumbnail={src}\n        width={width}\n        height={height}\n        alt={label}\n        caption={caption}\n      >\n        {({ ref, open }) => (\n          <button\n            type=\"button\"\n            ref={ref}\n            onClick={open}\n            className={cn('cursor-zoom-in outline-none', wrapperClassName)}\n            aria-label={\n              label ? `View ${label} full size` : 'View image full size'\n            }\n          >\n            <Image\n              src={src}\n              alt={label}\n              width={width}\n              height={height}\n              className={cn('h-auto w-full rounded-md', imageClassName)}\n            />\n          </button>\n        )}\n      </GalleryItem>\n      {caption && (\n        <figcaption className=\"text-muted-foreground text-center text-base\">\n          {caption}\n        </figcaption>\n      )}\n    </figure>\n  );\n}\n",
+      "type": "registry:component",
+      "target": "components/phone-frame/large-image.tsx"
+    },
+    {
+      "path": "src/components/phone-frame/image-gallery.tsx",
+      "content": "'use client';\n\nimport { useLightboxTrigger } from '@/components/phone-frame/page-lightbox';\n\ntype GalleryItemProps = {\n  original: string;\n  thumbnail?: string;\n  width: number;\n  height: number;\n  alt?: string;\n  caption?: string;\n  children: (props: {\n    ref: (node: HTMLElement | null) => void;\n    open: (event: React.MouseEvent) => void;\n  }) => React.ReactNode;\n};\n\n/** Registers an image with the page-level lightbox and exposes open/ref. */\nexport function GalleryItem({\n  original,\n  width,\n  height,\n  alt = '',\n  caption,\n  children,\n}: GalleryItemProps) {\n  const { ref, open } = useLightboxTrigger({\n    src: original,\n    width,\n    height,\n    alt,\n    caption,\n  });\n\n  return children({ ref, open });\n}\n",
+      "type": "registry:component",
+      "target": "components/phone-frame/image-gallery.tsx"
+    }
+  ],
+  "type": "registry:component"
+}
