@@ -256,15 +256,15 @@ export default function Harness() {
           id="left-right"
           title={`focus="left" / "right"`}
           note={`A different axis from zoom/focus above: a fixed 50/50 split of the frame's width, ignoring zoom entirely. Built for the hinge itself - inner-landscape's two panes either side of it - so showing "the app in one pane" is a half-width crop, not a tunable zoom.`}
-          code={`<DuoImage variant="inner-landscape" src="..." width={640} focus="left" />
-<DuoImage variant="inner-landscape" src="..." width={640} focus="right" />`}
+          code={`<DuoImage variant="inner-landscape" src="..." width={320} focus="left" />
+<DuoImage variant="inner-landscape" src="..." width={320} focus="right" />`}
         >
           <LabeledFrame label='focus="left"'>
             <DuoImage
               variant="inner-landscape"
               src={INNER_LANDSCAPE}
               caption="Inner landscape, left pane"
-              width={640}
+              width={320}
               focus="left"
             />
           </LabeledFrame>
@@ -274,7 +274,7 @@ export default function Harness() {
               variant="inner-landscape"
               src={INNER_LANDSCAPE}
               caption="Inner landscape, right pane"
-              width={640}
+              width={320}
               focus="right"
             />
           </LabeledFrame>
